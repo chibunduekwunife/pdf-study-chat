@@ -37,8 +37,8 @@ function Header() {
 }
 
 export const metadata: Metadata = {
-  title: 'PDF Chat',
-  description: 'Chat with your PDFs using AI! - A Codebender Project',
+  title: 'Study Sage',
+  description: 'Chat with your PDFs and quizzes!',
 }
 
 export default function RootLayout({

@@ -26,6 +26,13 @@ type aiMessage = {
   content: string;
 }
 
+// //gets the user's profile picture from clerk'
+// function UserAvatar() {
+//   const { user } = useUser();
+//
+//   return `${user?.imageUrl || '/user-avatar.jpg'}`;
+// }
+
 const userAuthor = {
   username: 'User',
   id: 1,
@@ -33,25 +40,25 @@ const userAuthor = {
 };
 
 const aiAuthor = {
-  username: 'Bob The Interviewer',
+  username: 'Study Sage',
   id: 2,
-  avatarUrl: '/bob.jpg',
+  avatarUrl: '/logo2.png',
 };
 
-const MAX_MESSAGES_PER_DAY = 20;
+const MAX_MESSAGES_PER_DAY = 200;
 
 const Chat: React.FC<ChatProps> = ({ pdfText }) => {
   console.log('pdfText:', pdfText);
-  const [input, setInput] = useState('');;
+  const [input, setInput] = useState('');
   const initialMessage = {
     author: aiAuthor,
-    text: 'Hello, I am Bob the PDF AI Chatter. How can I help you?',
+    text: 'Hello, I am Study Sage, your Text Chatter & Tutor. How can I help you?',
     type: 'text',
     timestamp: +new Date(),
   };
   const initialAiMessage = {
     role: 'assistant',
-    content: 'Hello, I am Bob the PDF AI Chatter. How can I help you?',
+    content: 'Hello, I am Study Sage, your Text Chatter & Tutor. How can I help you?',
   };
   const [chatMessages, setChatMessages] = useState<Message[]>([initialMessage]);
   const [aiMessages, setAiMessages] = useState<aiMessage[]>([]);
