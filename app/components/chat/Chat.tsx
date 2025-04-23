@@ -137,13 +137,22 @@ USER MESSAGE: ${message}`
     <div className="chat">
       {renderResponse()}
       <form onSubmit={handleOnSendMessage} className="chat-form">
-        <input
-            name="input-field"
-            type="text"
-            placeholder="Ask me anything . . . "
-            onChange={(e) => setInput(e.target.value)}
-            value={input}
-        />
+        <div className="relative group w-full">
+          <input
+              name="input-field"
+              type="text"
+              placeholder="Ask me anything . . . "
+              onChange={(e) => setInput(e.target.value)}
+              value={input}
+              className="w-full disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
+              disabled={!pdfText}
+          />
+          {!pdfText && (
+              <div className="absolute left-0 top-full mt-1 w-max px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                Upload a PDF to start chatting
+              </div>
+          )}
+        </div>
         <button type="submit" className="send-button flex
         items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed
         disabled:pointer-events-none" disabled={!input}>

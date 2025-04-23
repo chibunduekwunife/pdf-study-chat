@@ -2,11 +2,7 @@ import React, { useState } from 'react';
 import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
 import styles from '../../styles/PdfUploader.module.css';
 import { MdCloudUpload } from "react-icons/md";
-
-type Props = {
-  setPdfText: React.Dispatch<React.SetStateAction<string>>;
-  setSelectedFile: React.Dispatch<React.SetStateAction<File | undefined>>;
-};
+import {Props} from '../../lib/types';
 
 const PdfUploader: React.FC<Props> = ({ setPdfText, setSelectedFile }) => {
   const [error, setError] = useState('');

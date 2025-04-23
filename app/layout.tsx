@@ -7,6 +7,9 @@ import {dark} from '@clerk/themes';
 export const metadata: Metadata = {
     title: 'Study Sage',
     description: 'Chat with your PDFs and quizzes!',
+    icons: {
+        icon: '@/favicon.ico',
+    }
 }
 
 export default function RootLayout({ children }: {

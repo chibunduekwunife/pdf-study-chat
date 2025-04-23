@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Chat from './components/chat/Chat';
 import PdfUploader from './components/chat/PdfUploader';
 import PDFViewer from './components/chat/PDFViewer';
@@ -8,6 +8,8 @@ import Quiz from "@/app/components/quiz/Quiz";
 import { Message, aiMessage } from "@/app/lib/types";
 import { aiAuthor, initialMessage } from "@/app/lib/chat-declarations";
 import Header from '@/app/components/Header'
+
+
 
 export default function Home() {
     const [pdfText, setPdfText] = useState<string>('');
@@ -20,6 +22,20 @@ export default function Home() {
     const [input, setInput] = useState('');
     const [chatMessages, setChatMessages] = useState<Message[]>([initialMessage]);
     const [aiMessages, setAiMessages] = useState<aiMessage[]>([]);
+
+    // save chat history to localStorage or a database:
+    useEffect(() => {
+        const savedChat = localStorage.getItem('pdfChatHistory');
+        if (savedChat) {
+            setChatMessages(JSON.parse(savedChat));
+        }
+    }, []);
+
+    useEffect(() => {
+        if (chatMessages.length > 1) { // Don't save initial message
+            localStorage.setItem('pdfChatHistory', JSON.stringify(chatMessages));
+        }
+    }, [chatMessages]);
 
 
     return (

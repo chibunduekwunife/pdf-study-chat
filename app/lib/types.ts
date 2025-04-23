@@ -1,3 +1,10 @@
+import React from "react";
+
+export type Props = {
+    setPdfText: React.Dispatch<React.SetStateAction<string>>;
+    setSelectedFile: React.Dispatch<React.SetStateAction<File | undefined>>;
+};
+
 export type ChatProps = {
     pdfText: string;
     input: string;
@@ -28,3 +35,11 @@ export type aiMessage = {
     role: string;
     content: string;
 }
+
+// Type for quiz questions
+export type QuizQuestion = {
+    question: string;
+    options: string[];
+    correctAnswer: string;
+    explanation: string;
+};
