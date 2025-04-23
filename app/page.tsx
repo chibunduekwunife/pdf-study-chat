@@ -24,18 +24,28 @@ export default function Home() {
     const [aiMessages, setAiMessages] = useState<aiMessage[]>([]);
 
     // save chat history to localStorage or a database:
-    useEffect(() => {
-        const savedChat = localStorage.getItem('pdfChatHistory');
-        if (savedChat) {
-            setChatMessages(JSON.parse(savedChat));
-        }
-    }, []);
+    // useEffect(() => {
+    //     const savedChat = localStorage.getItem('pdfChatHistory');
+    //     if (savedChat) {
+    //         setChatMessages(JSON.parse(savedChat));
+    //     }
+    // }, []);
+    //
+    // useEffect(() => {
+    //     if (chatMessages.length > 1) { // Don't save initial message
+    //         localStorage.setItem('pdfChatHistory', JSON.stringify(chatMessages));
+    //     }
+    // }, [chatMessages]);
 
-    useEffect(() => {
-        if (chatMessages.length > 1) { // Don't save initial message
-            localStorage.setItem('pdfChatHistory', JSON.stringify(chatMessages));
-        }
-    }, [chatMessages]);
+    // remove pdf
+    const handleRemovePDF = () => {
+        setPdfText('');
+        setSelectedFile(undefined);
+
+        //reset chat and AI messages
+        setChatMessages([initialMessage]);
+        setAiMessages([]);
+    };
 
 
     return (
@@ -49,7 +59,9 @@ export default function Home() {
                     <div className="flex flex-col md:flex-row w-full h-full gap-8 px-4 md:p-0">
                         <div className="relative w-full md:w-1/2">
                             {pdfText
-                                ? <PDFViewer file={selectedFile as File}/>
+                                ? <PDFViewer
+                                    file={selectedFile as File}
+                                    onRemove={handleRemovePDF}/>
                                 : <PdfUploader
                                     setPdfText={setPdfText}
                                     setSelectedFile={setSelectedFile}/>
