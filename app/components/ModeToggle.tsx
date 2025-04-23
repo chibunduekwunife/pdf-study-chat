@@ -1,8 +1,12 @@
 "use client"
 import { useState } from "react";
 
-export default function ModeToggle() {
-    const [activeMode, setActiveMode] = useState("chat"); // Default: Chat mode
+export default function ModeToggle({ activeMode, setActiveMode }:
+{
+    activeMode: string,
+    setActiveMode: React.Dispatch<React.SetStateAction<string>>
+}) {
+     // Default: Chat mode
 
     return (
         <div className="flex items-center space-x-2 p-4 rounded-lg">

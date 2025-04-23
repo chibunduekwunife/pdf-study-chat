@@ -6,56 +6,23 @@ import Image from 'next/image';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
+import { ChatProps, Message, aiMessage } from '../../lib/types';
+import { MAX_MESSAGES_PER_DAY, userAuthor } from '../../lib/chat-declarations';
 
-type ChatProps = {
-  pdfText: string;
-};
 
-type Message = {
-  author: {
-    username: string;
-    id: number;
-    avatarUrl: string;
-  }
-  text: string;
-  type: string;
-  timestamp: number;
-}
 
-type aiMessage = {
-  role: string;
-  content: string;
-}
+const Chat: React.FC<ChatProps> = ({
+                                     pdfText,
+                                     input,
+                                     setInput,
+                                     chatMessages,
+                                     setChatMessages,
+                                     aiMessages,
+                                     setAiMessages,
+                                     aiAuthor}) => {
 
-const userAuthor = {
-  username: 'User',
-  id: 1,
-  avatarUrl: '/user.png',
-};
-
-const aiAuthor = {
-  username: 'Study Sage',
-  id: 2,
-  avatarUrl: '/owl.png',
-};
-
-const MAX_MESSAGES_PER_DAY = 200;
-
-const Chat: React.FC<ChatProps> = ({ pdfText }) => {
   console.log('pdfText:', pdfText);
-  const [input, setInput] = useState('');
-  const initialMessage = {
-    author: aiAuthor,
-    text: 'Hello, I am Study Sage, your Text Chatter & Tutor. How can I help you?',
-    type: 'text',
-    timestamp: +new Date(),
-  };
-  const initialAiMessage = {
-    role: 'assistant',
-    content: 'Hello, I am Study Sage, your Text Chatter & Tutor. How can I help you?',
-  };
-  const [chatMessages, setChatMessages] = useState<Message[]>([initialMessage]);
-  const [aiMessages, setAiMessages] = useState<aiMessage[]>([]);
+
   const chatContainer = useRef<HTMLDivElement>(null);
 
   const { user } = useUser();
@@ -84,10 +51,6 @@ const Chat: React.FC<ChatProps> = ({ pdfText }) => {
 
     const message = e.currentTarget['input-field'].value;
     setInput('');
-
-    // message cap is stored in localStorage, which can be restarted
-    // with a page refresh, however, the entire chat refreshes on a page refresh
-    // figure out how to save chat history and messages used even after refresh
 
     const currentDate = new Date().toISOString().slice(0, 10);
     const storedDate = localStorage.getItem('lastMessageDate');
