@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 import { fetchOpenAIResponse } from '../../utils/fetchOpenAIResponse';
 import Image from 'next/image';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useUser, useClerk } from '@clerk/nextjs';
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
-import { ChatProps, Message, aiMessage } from '../../lib/types';
+import { ChatProps } from '../../lib/types';
 import { MAX_MESSAGES_PER_DAY, userAuthor } from '../../lib/chat-declarations';
 
 
