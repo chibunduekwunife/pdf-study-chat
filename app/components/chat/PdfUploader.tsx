@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { TextContent, TextItem } from 'pdfjs-dist/types/src/display/api';
-import styles from '../styles/PdfUploader.module.css';
+import styles from '../../styles/PdfUploader.module.css';
 import { MdCloudUpload } from "react-icons/md";
 
 type Props = {

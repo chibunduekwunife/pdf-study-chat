@@ -14,6 +14,10 @@ type Props = {
   setError: (error: Error) => void;
 }
 
+//this async function sends a chat conversation to an API endpoint, streams
+//the response in real-time, updates the UI with the incoming text chunks, and handles
+//errors like authentication failures or server issues
+
 export async function fetchOpenAIResponse({ messages, setMessage, setError }: Props) {
   try {
     const response = await fetch(`/api/chat`, {
@@ -33,6 +37,7 @@ export async function fetchOpenAIResponse({ messages, setMessage, setError }: Pr
       throw new Error('No response body');
     }
 
+    // text=stream handling
     const reader = response.body.getReader();
     let chunks = [];
 

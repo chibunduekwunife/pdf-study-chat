@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { fetchOpenAIResponse } from '../utils/fetchOpenAIResponse';
+import { fetchOpenAIResponse } from '../../utils/fetchOpenAIResponse';
 import Image from 'next/image';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useUser, useClerk } from '@clerk/nextjs';
+import { ArrowUpIcon } from '@heroicons/react/24/solid'
 
 type ChatProps = {
   pdfText: string;
@@ -26,23 +27,16 @@ type aiMessage = {
   content: string;
 }
 
-// //gets the user's profile picture from clerk'
-// function UserAvatar() {
-//   const { user } = useUser();
-//
-//   return `${user?.imageUrl || '/user-avatar.jpg'}`;
-// }
-
 const userAuthor = {
   username: 'User',
   id: 1,
-  avatarUrl: '/user-avatar.jpg',
+  avatarUrl: '/user.png',
 };
 
 const aiAuthor = {
   username: 'Study Sage',
   id: 2,
-  avatarUrl: '/logo2.png',
+  avatarUrl: '/owl.png',
 };
 
 const MAX_MESSAGES_PER_DAY = 200;
@@ -74,13 +68,15 @@ const Chat: React.FC<ChatProps> = ({ pdfText }) => {
     }
   }
 
+  //auto-scroll based on chat messages?
   useEffect(() => {
     scroll();
   }, [chatMessages]);
 
   const handleOnSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
+    //prevent chatting with AI if not logged in
     if (!user){
       openSignUp();
       return;
@@ -88,6 +84,10 @@ const Chat: React.FC<ChatProps> = ({ pdfText }) => {
 
     const message = e.currentTarget['input-field'].value;
     setInput('');
+
+    // message cap is stored in localStorage, which can be restarted
+    // with a page refresh, however, the entire chat refreshes on a page refresh
+    // figure out how to save chat history and messages used even after refresh
 
     const currentDate = new Date().toISOString().slice(0, 10);
     const storedDate = localStorage.getItem('lastMessageDate');
@@ -147,6 +147,8 @@ USER MESSAGE: ${message}`
     });
     setAiMessages(messages => [...messages, {role: 'user', content: message }, {role: 'assistant', content: response }]);
 
+    //adding to the message count is done here, not in the useEffect hook,
+    //make this better
     localStorage.setItem('messageCount', (messageCount + 1).toString());
   }
 
@@ -172,8 +174,18 @@ USER MESSAGE: ${message}`
     <div className="chat">
       {renderResponse()}
       <form onSubmit={handleOnSendMessage} className="chat-form">
-        <input name="input-field" type="text" placeholder="Ask anything" onChange={(e) => setInput(e.target.value)} value={input} />
-        <button type="submit" className="send-button" />
+        <input
+            name="input-field"
+            type="text"
+            placeholder="Ask me anything . . . "
+            onChange={(e) => setInput(e.target.value)}
+            value={input}
+        />
+        <button type="submit" className="send-button flex
+        items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed
+        disabled:pointer-events-none" disabled={!input}>
+          <ArrowUpIcon className="size-4" />
+        </button>
       </form>
     </div>
   );

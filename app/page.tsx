@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import Chat from './components/Chat';
-import PdfUploader from './components/PdfUploader';
-import PDFViewer from './components/PDFViewer';
+import Chat from './components/chat/Chat';
+import PdfUploader from './components/chat/PdfUploader';
+import PDFViewer from './components/chat/PDFViewer';
 
 export default function Home() {
   const [pdfText, setPdfText] = useState<string>('');
