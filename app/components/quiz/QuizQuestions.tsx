@@ -24,25 +24,33 @@ export default function QuizQuestions({ quizData, onComplete }: QuizQuestionsPro
     const currentQuestion = quizData.questions[currentIndex];
 
     return (
-        <div className="quiz-questions">
-            <div className="progress">
-                Question {currentIndex + 1}/{quizData.questions.length}
+        <div className="flex flex-col items-center justify-center bg-[#001428] p-5 gap-4
+        h-full overflow-y-scroll">
+            <div className='flex flex-col items-center'>
+                <div className="text-blue-300">
+                    Question {currentIndex + 1}/{quizData.questions.length}
+                </div>
+
+                <h2 className="font-bold text-lg w-[70%]">{currentQuestion.question}</h2>
             </div>
 
-            <h3 className="question-text">{currentQuestion.question}</h3>
-
             {quizData.style === 'multiple-choice' ? (
-                <div className="options">
-                    {currentQuestion.options?.map((option: string, i: number) => (
-                        <button
-                            key={i}
-                            onClick={() => handleAnswer(option)}
-                            className="option"
-                        >
-                            {option}
-                        </button>
-                    ))}
-                </div>
+                <>
+                    <div className="flex flex-col gap-2 items-start">
+                        {currentQuestion.options?.map((option: string, i: number) => (
+                            <button
+                                key={i}
+                                onClick={() => handleAnswer(option)}
+                                className="option"
+                            >
+                                {option}
+                            </button>
+                        ))}
+                    </div>
+                    <button>
+                        Submit
+                    </button>
+                </>
             ) : (
                 <div className="short-answer">
           <textarea

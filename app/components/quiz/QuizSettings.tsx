@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { QuizSettingsProps } from "@/app/lib/types";
 
 export default function QuizSettings({ onStart, isLoading, pdfText }: QuizSettingsProps) {
-    const [quizStyle, setQuizStyle] = useState('flashcards');
+    const [quizStyle, setQuizStyle] = useState('multiple-choice');
     const [quizLength, setQuizLength] = useState(5);
     const [pageRange, setPageRange] = useState([1, 10]);
     const [difficulty, setDifficulty] = useState('elementary');
@@ -36,9 +36,9 @@ export default function QuizSettings({ onStart, isLoading, pdfText }: QuizSettin
                             className="w-full p-2 border rounded-md"
                             disabled={!pdfText}
                         >
-                            <option value="flashcards">Flashcards</option>
                             <option value="multiple-choice">Multiple Choice</option>
                             <option value="short-answer">Short Answer</option>
+                            <option value="flashcards" disabled>Flashcards</option>
                         </select>
                     </div>
 
