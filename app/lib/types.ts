@@ -37,9 +37,21 @@ export type aiMessage = {
 }
 
 // Type for quiz questions
-export type QuizQuestion = {
-    question: string;
-    options: string[];
-    correctAnswer: string;
-    explanation: string;
+
+export type QuizData = {
+    title: string;
+    questions: Array<{
+        question: string;
+        options?: string[];
+        correctAnswer: string;
+        explanation?: string;
+    }>;
+};
+
+// quiz settings
+
+export type QuizSettingsProps = {
+    onStart: (settings: any) => void;
+    isLoading: boolean;
+    pdfText: string;
 };

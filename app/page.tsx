@@ -79,7 +79,7 @@ export default function Home() {
                                         aiMessages={aiMessages}
                                         setAiMessages={setAiMessages}
                                         aiAuthor={aiAuthor}/>
-                                    : <Quiz/>
+                                    : <Quiz pdfText={pdfText}/>
                             }
                         </div>
                     </div>

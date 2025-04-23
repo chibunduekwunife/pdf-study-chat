@@ -50,7 +50,7 @@ const PDFViewer = ({ file, onRemove }: PDFViewerProps) => {
         <button
             onClick={onRemove}
             className="
-              items-center gap-1 text-sm text-white bg-red-600 hover:bg-red-700
+              items-center gap-1 text-sm text-black bg-amber-300 hover:bg-amber-400
               transition-colors px-2 absolute z-50 top-0
             "
             aria-label="Remove PDF"
