@@ -6,7 +6,8 @@ export const aiAuthor = {
 
 export const initialMessage = {
     author: aiAuthor,
-    text: 'Hello, I am Study Sage, your Text Chatter & Tutor. How can I help you?',
+    text: 'Hello, I am Study Sage, your Text Chatter & Tutor. ' +
+        'To start a conversation, please upload a PDF file.',
     type: 'text',
     timestamp: +new Date(),
 };
