@@ -27,11 +27,16 @@ export default function Quiz({ pdfText }: QuizProps) {
                 }),
             });
 
+            if (!response.ok) {
+                throw new Error('Failed to generate quiz');
+            }
+
             const data = await response.json();
             setQuizData(data);
             setStage('questions');
         } catch (error) {
             console.error('Failed to generate quiz:', error);
+            alert('Failed to generate quiz. Please try again.');
         } finally {
             setIsLoading(false);
         }

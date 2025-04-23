@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { QuizSettingsProps } from "@/app/lib/types";
 
-export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSettingsProps) {
-    const [fileUploaded, setFileUploaded] = useState(false);
+export default function QuizSettings({ onStart, isLoading, pdfText }: QuizSettingsProps) {
     const [quizStyle, setQuizStyle] = useState('flashcards');
     const [quizLength, setQuizLength] = useState(5);
     const [pageRange, setPageRange] = useState([1, 10]);
     const [difficulty, setDifficulty] = useState('elementary');
-    // const [pdfText, setPdfText] = useState('');
 
     const handleStartQuiz = () => {
         if (!pdfText) {
@@ -22,28 +20,12 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
             pageRange,
             difficulty
         });
-
     };
 
     return (
         <div>
             <h2 className="text-xl font-bold mb-4">Quiz Settings</h2>
-            <div className={`p-6 max-w-md mx-auto bg-white rounded-lg shadow-md ${!fileUploaded ? 'opacity-50 pointer-events-none' : ''}`}>
-
-                {/*<div className="mb-6">*/}
-                {/*    <label className="block mb-2 font-medium">Upload File</label>*/}
-                {/*    <input*/}
-                {/*        type="file"*/}
-                {/*        onChange={(e) => setFileUploaded(e.target.files.length > 0)}*/}
-                {/*        className="block w-full text-sm text-gray-500*/}
-                {/*file:mr-4 file:py-2 file:px-4*/}
-                {/*file:rounded-md file:border-0*/}
-                {/*file:text-sm file:font-semibold*/}
-                {/*file:bg-blue-50 file:text-blue-700*/}
-                {/*hover:file:bg-blue-100"*/}
-                {/*    />*/}
-                {/*</div>*/}
-
+            <div className={`p-6 max-w-md mx-auto bg-white rounded-lg shadow-md ${!pdfText ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div className="text-black space-y-6">
                     {/* Quiz Style */}
                     <div>
@@ -52,7 +34,7 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                             value={quizStyle}
                             onChange={(e) => setQuizStyle(e.target.value)}
                             className="w-full p-2 border rounded-md"
-                            // disabled={!fileUploaded}
+                            disabled={!pdfText}
                         >
                             <option value="flashcards">Flashcards</option>
                             <option value="multiple-choice">Multiple Choice</option>
@@ -70,7 +52,7 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                             value={quizLength}
                             onChange={(e) => setQuizLength(parseInt(e.target.value))}
                             className="w-full p-2 border rounded-md"
-                            // disabled={!fileUploaded}
+                            disabled={!pdfText}
                         />
                     </div>
 
@@ -84,7 +66,7 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                                 value={pageRange[0]}
                                 onChange={(e) => setPageRange([parseInt(e.target.value), pageRange[1]])}
                                 className="w-full p-2 border rounded-md"
-                                // disabled={!fileUploaded}
+                                disabled={!pdfText}
                             />
                             <span className="flex items-center">to</span>
                             <input
@@ -93,7 +75,7 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                                 value={pageRange[1]}
                                 onChange={(e) => setPageRange([pageRange[0], parseInt(e.target.value)])}
                                 className="w-full p-2 border rounded-md"
-                                // disabled={!fileUploaded}
+                                disabled={!pdfText}
                             />
                         </div>
                     </div>
@@ -105,7 +87,7 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                             value={difficulty}
                             onChange={(e) => setDifficulty(e.target.value)}
                             className="w-full p-2 border rounded-md"
-                            // disabled={!fileUploaded}
+                            disabled={!pdfText}
                         >
                             <option value="elementary">Elementary</option>
                             <option value="intermediate">Intermediate</option>
@@ -117,13 +99,15 @@ export default function QuizSettings({ onStart, isLoading, pdfText}: QuizSetting
                     {/* Start Quiz Button */}
                     <button
                         onClick={handleStartQuiz}
+                        disabled={!pdfText || isLoading}
                         className={`w-full py-2 px-4 rounded-md font-medium ${
-                            fileUploaded
+                            pdfText
                                 ? 'bg-blue-600 text-white hover:bg-blue-700'
                                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                         }`}
                     >
-                        Start Quiz
+                        {isLoading ? 'Generating Quiz...' : 'Start Quiz'}
+
                     </button>
                 </div>
             </div>
