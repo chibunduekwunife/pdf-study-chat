@@ -145,7 +145,11 @@ USER MESSAGE: ${message}`
                             <div className={`flex max-w-3xl ${m.author.username === 'User' ? 'flex-row-reverse' : ''}`}>
                                 <div className="flex-shrink-0">
                                     <Image
-                                        className="rounded-full"
+                                        className=
+                                            {`rounded-full 
+                                            ${m.author.username !== 'User' 
+                                                ? 'bg-gray-100' 
+                                                : 'bg-transparent'}`}
                                         alt="avatar"
                                         src={m.author.avatarUrl}
                                         width={32}

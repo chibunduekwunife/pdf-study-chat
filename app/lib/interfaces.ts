@@ -24,4 +24,5 @@ export interface QuizSettingsProps {
 export interface QuizQuestionsProps {
     quizData: QuizData;
     onComplete: (answers: Record<number, string>) => void;
+    onEndQuiz: () => void
 }

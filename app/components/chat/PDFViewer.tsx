@@ -61,7 +61,7 @@ const PDFViewer = ({ file, onRemove }: PDFViewerProps) => {
           {pageNumber}/{numPages}
         </div>
       </div>
-      <div className="h-[300px] md:h-full overflow-y-scroll">
+      <div className="h-[400px] md:h-full overflow-y-scroll">
         <Document file={file} onLoadSuccess={onDocumentLoadSuccess} className="pdf-document">
           {Array.from(new Array(numPages), (el, index) => (
             <div ref={el => pageElementsRef.current[index] = el} data-page-number={index + 1} key={index}>

@@ -9,8 +9,6 @@ import { Message, aiMessage } from "@/app/lib/types";
 import { aiAuthor, initialMessage } from "@/app/lib/chat-declarations";
 import Header from '@/app/components/Header'
 
-
-
 export default function Home() {
     const [pdfText, setPdfText] = useState<string>('');
     const [selectedFile, setSelectedFile] = useState<File>();

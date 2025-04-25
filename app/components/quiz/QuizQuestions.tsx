@@ -5,7 +5,7 @@ import {
     QuizData
 } from "@/app/lib/interfaces";
 
-export default function QuizQuestions({ quizData, onComplete, onEndQuiz }: QuizQuestionsProps & { onEndQuiz: () => void }) {
+export default function QuizQuestions({ quizData, onComplete, onEndQuiz }: QuizQuestionsProps) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const containerRef = useRef<HTMLDivElement>(null);
@@ -38,77 +38,71 @@ export default function QuizQuestions({ quizData, onComplete, onEndQuiz }: QuizQ
     const currentAnswer = answers[currentIndex];
 
     return (
-        <div
-            ref={containerRef}
-            className="flex flex-col items-center justify-start min-h-screen
-            bg-[#001428] p-6 gap-6 text-white overflow-y-auto"
-        >
-            <div className="w-full max-w-2xl flex flex-col gap-6">
-                {/* Progress indicator */}
-                <div className="w-full flex justify-between items-center mb-4 sticky top-0 bg-[#001428] pt-4 pb-2 z-10">
-                    <span className="text-blue-300 font-medium">
-                        Question {currentIndex + 1} of {quizData.questions.length}
-                    </span>
-                    <div className="w-full bg-gray-700 rounded-full h-2.5 mx-4">
-                        <div
-                            className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
-                            style={{ width: `${((currentIndex) / (quizData.questions.length - 1)) * 100}%` }}
-                        ></div>
+        <div className="flex flex-col h-full">
+            {/* Progress indicator */}
+            <div className="w-full flex justify-between items-center p-4 bg-[#001428] sticky top-0 z-10">
+                <span className="text-blue-300 font-medium">
+                    Question {currentIndex + 1} of {quizData.questions.length}
+                </span>
+                <div className="w-full bg-gray-700 rounded-full h-2.5 mx-4">
+                    <div
+                        className="bg-blue-500 h-2.5 rounded-full transition-all duration-300"
+                        style={{ width: `${((currentIndex) / (quizData.questions.length - 1)) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            {/* Questions container */}
+            <div
+                ref={containerRef}
+                className="flex-1 overflow-y-auto p-4 bg-[#001428]"
+            >
+                <div className="max-w-2xl mx-auto">
+                    {/* Question */}
+                    <div className="w-full bg-gray-800/50 rounded-xl p-6 shadow-lg mb-4">
+                        <h2 className="text-xl font-bold mb-6 text-center">
+                            {currentQuestion.question}
+                        </h2>
+
+                        {/* Answer options */}
+                        {quizData.style === 'multiple-choice' ? (
+                            <div className="grid gap-3 w-full">
+                                {currentQuestion.options?.map((option: string, i: number) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => handleAnswer(option)}
+                                        className={`w-full p-4 text-left rounded-lg transition-all duration-200 border
+                                        focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                        ${
+                                            currentAnswer === option
+                                                ? 'bg-blue-600 border-blue-400'
+                                                : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-blue-400'
+                                        }`}
+                                    >
+                                        <span className="font-medium mr-2 text-blue-300">{String.fromCharCode(65 + i)}.</span>
+                                        {option}
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-4">
+                                <textarea
+                                    placeholder="Type your answer here..."
+                                    onChange={(e) => setAnswers(prev => ({...prev, [currentIndex]: e.target.value}))}
+                                    value={currentAnswer || ''}
+                                    className="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg
+                                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                                    placeholder-gray-400 resize-none min-h-[120px]"
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
+            </div>
 
-                {/* Question */}
-                <div className="w-full bg-gray-800/50 rounded-xl p-6 shadow-lg">
-                    <h2 className="text-xl font-bold mb-6 text-center">
-                        {currentQuestion.question}
-                    </h2>
-
-                    {/* Answer options */}
-                    {quizData.style === 'multiple-choice' ? (
-                        <div className="grid gap-3 w-full">
-                            {currentQuestion.options?.map((option: string, i: number) => (
-                                <button
-                                    key={i}
-                                    onClick={() => handleAnswer(option)}
-                                    className={`w-full p-4 text-left rounded-lg transition-all duration-200 border
-                                    focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                    ${
-                                        currentAnswer === option
-                                            ? 'bg-blue-600 border-blue-400'
-                                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600 hover:border-blue-400'
-                                    }`}
-                                >
-                                    <span className="font-medium mr-2 text-blue-300">{String.fromCharCode(65 + i)}.</span>
-                                    {option}
-                                </button>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="flex flex-col gap-4">
-                            <textarea
-                                placeholder="Type your answer here..."
-                                onChange={(e) => setAnswers(prev => ({...prev, [currentIndex]: e.target.value}))}
-                                value={currentAnswer || ''}
-                                className="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg
-                                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                                placeholder-gray-400 resize-none min-h-[120px]"
-                            />
-                            <button
-                                onClick={() => handleAnswer(currentAnswer || '')}
-                                disabled={!currentAnswer}
-                                className={`w-full py-3 px-6 rounded-lg font-medium transition-all
-                                ${currentAnswer
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                    : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
-                            >
-                                {currentIndex === quizData.questions.length - 1 ? 'Finish Quiz' : 'Submit Answer'}
-                            </button>
-                        </div>
-                    )}
-                </div>
-
-                {/* Navigation buttons - sticky to bottom */}
-                <div className="flex gap-4 w-full justify-between mt-4 sticky bottom-4 bg-[#001428] pb-4 pt-2">
+            {/* Navigation buttons */}
+            <div className="w-full p-4 bg-[#001428] sticky bottom-0">
+                <div className="max-w-2xl mx-auto flex gap-4 justify-between">
                     <button
                         onClick={onEndQuiz}
                         className="py-2 px-6 bg-red-800 hover:bg-red-900 rounded-lg transition-colors"
@@ -127,12 +121,27 @@ export default function QuizQuestions({ quizData, onComplete, onEndQuiz }: QuizQ
 
                     <div className="flex-1"></div>
 
-                    {currentIndex < quizData.questions.length - 1 && currentAnswer && (
+                    {currentIndex < quizData.questions.length - 1 ? (
                         <button
-                            onClick={() => handleAnswer(currentAnswer)}
-                            className="py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                            onClick={() => handleAnswer(currentAnswer || '')}
+                            disabled={!currentAnswer}
+                            className={`py-2 px-6 rounded-lg transition-colors
+                            ${currentAnswer
+                                ? 'bg-blue-600 hover:bg-blue-700 text-white'
+                                : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
                         >
                             Next Question
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => handleAnswer(currentAnswer || '')}
+                            disabled={!currentAnswer}
+                            className={`py-2 px-6 rounded-lg transition-colors
+                            ${currentAnswer
+                                ? 'bg-green-600 hover:bg-green-700 text-white'
+                                : 'bg-gray-600 text-gray-400 cursor-not-allowed'}`}
+                        >
+                            Finish Quiz
                         </button>
                     )}
                 </div>
