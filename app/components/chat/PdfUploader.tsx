@@ -8,6 +8,7 @@ const PdfUploader: React.FC<Props> = ({ setPdfText, setSelectedFile }) => {
   const [error, setError] = useState('');
   const [isDragOver, setIsDragOver] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const pageLimit = 30;
 
   const mergeTextContent = (textContent: TextContent) => {
     return textContent.items
@@ -33,10 +34,10 @@ const PdfUploader: React.FC<Props> = ({ setPdfText, setSelectedFile }) => {
         loadingTask.promise.then(
           (pdfDoc) => {
             const numPages = pdfDoc.numPages;
-            if (numPages > 4) {
+            if (numPages > pageLimit) {
               alert('Please note that due to the limitations of our free service, only the first 4 pages will be considered for processing.');
             }
-            for(let i = 1; i <= Math.min(numPages, 4); i++) {
+            for(let i = 1; i <= Math.min(numPages, pageLimit); i++) {
               pdfDoc.getPage(i).then((page) => {
                 page.getTextContent().then((textContent) => {
                   const extractedText = mergeTextContent(textContent);
