@@ -1,4 +1,4 @@
-import {openai} from "@/app/lib/ai-declarations"
+import { openai } from "@/app/lib/ai-declarations"
 import {NextResponse} from 'next/server';
 
 
@@ -13,29 +13,15 @@ export async function POST(request: Request) {
                 {
                     role: 'system',
                     content: `You are a quiz generator. 
-                    Create a unique, high-quality quiz based on the provided text with these strict guidelines:
-                    
-          1. QUIZ FORMATTING:
+                    Create a unique quiz based on the provided text with the following settings:
           - Style: ${quizSettings.quizStyle}
           - Number of questions: ${quizSettings.quizLength}
           - Difficulty: ${quizSettings.difficulty}
           
-          1. QUESTION FORMATTING:
-            - Questions must be clear, concise, and free from URLs or external links
-            - Avoid opinion-based questions unless specified
-            - Phrase questions as complete sentences ending with "?"
-
-          2. ANSWER FORMATTING (for multiple-choice):
-            - Provide ONLY the answer text without:
-              * Prefix letters (A, B, C, etc.)
-              * Numbering (1., 2., etc.)
-              * Bullet points
-            - All options should be parallel in structure and length
-            - Answers must be free from URLs or external links
-            - Include exactly 4 options unless specified otherwise
-            - Make incorrect options plausible but clearly wrong
+          Here are some key points to keep in mind:
+          - The question or answer options should not contain any links
           
-          3. Return the quiz in JSON format with this structure:
+          Return the quiz in JSON format with this structure:
           {
             "questions": [
               {
@@ -47,10 +33,7 @@ export async function POST(request: Request) {
               ...
             ],
             "style": "quiz style"
-          }
-          
-            - No additional formatting or Markdown in the JSON
-            - No preamble or conclusion text - just pure JSON`
+          }`
                 },
                 {
                     role: 'user',

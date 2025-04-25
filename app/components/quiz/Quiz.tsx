@@ -36,7 +36,7 @@ export default function Quiz({ pdfText }: QuizProps) {
             setStage('questions');
         } catch (error) {
             console.error('Failed to generate quiz:', error);
-            alert('Failed to generate quiz. Please try again.');
+            alert('Failed to generate quiz. Please Login and try again.');
         } finally {
             setIsLoading(false);
         }
