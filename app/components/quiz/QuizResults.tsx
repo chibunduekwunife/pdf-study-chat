@@ -1,4 +1,3 @@
-// app/components/quiz/QuizResults.tsx
 export default function QuizResults({ quizData, userAnswers, onRestart }: {
     quizData: any,
     userAnswers: Record<number, string>,
@@ -11,26 +10,52 @@ export default function QuizResults({ quizData, userAnswers, onRestart }: {
     const percentage = Math.round((score / quizData.questions.length) * 100);
 
     return (
-        <div className="quiz-results">
-            <h2>Quiz Complete!</h2>
-            <div className="score">
+        <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+            <h2 className="text-3xl font-bold text-center mb-6 text-indigo-700">Quiz Complete!</h2>
+
+            <div className={`text-center text-2xl font-semibold mb-8 ${
+                percentage >= 70 ? 'text-green-600' : percentage >= 50 ? 'text-yellow-500' : 'text-red-600'
+            }`}>
                 You scored {score} out of {quizData.questions.length} ({percentage}%)
             </div>
 
-            <div className="feedback">
+            <div className="space-y-6 mb-8">
                 {quizData.questions.map((q: any, i: number) => (
-                    <div key={i} className={`question-feedback ${
-                        userAnswers[i] === q.correctAnswer ? 'correct' : 'incorrect'
-                    }`}>
-                        <p><strong>Q:</strong> {q.question}</p>
-                        <p><strong>Your answer:</strong> {userAnswers[i] || 'No answer'}</p>
-                        <p><strong>Correct answer:</strong> {q.correctAnswer}</p>
-                        {q.explanation && <p><strong>Explanation:</strong> {q.explanation}</p>}
+                    <div
+                        key={i}
+                        className={`p-4 rounded-lg border ${
+                            userAnswers[i] === q.correctAnswer
+                                ? 'bg-green-50 border-green-200'
+                                : 'bg-red-50 border-red-200'
+                        }`}
+                    >
+                        <p className="font-bold text-lg mb-2 text-gray-800">Q: {q.question}</p>
+
+                        <p className={`mb-1 ${
+                            userAnswers[i] === q.correctAnswer
+                                ? 'text-green-700'
+                                : 'text-red-700'
+                        }`}>
+                            <span className="font-semibold">Your answer:</span> {userAnswers[i] || 'No answer'}
+                        </p>
+
+                        <p className="text-green-700 mb-1">
+                            <span className="font-semibold">Correct answer:</span> {q.correctAnswer}
+                        </p>
+
+                        {q.explanation && (
+                            <p className="mt-2 text-gray-600 italic">
+                                <span className="font-semibold">Explanation:</span> {q.explanation}
+                            </p>
+                        )}
                     </div>
                 ))}
             </div>
 
-            <button onClick={onRestart} className="restart-btn">
+            <button
+                onClick={onRestart}
+                className="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg transition duration-200"
+            >
                 Start New Quiz
             </button>
         </div>

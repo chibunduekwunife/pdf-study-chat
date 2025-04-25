@@ -5,162 +5,198 @@ import { fetchOpenAIResponse } from '../../utils/fetchOpenAIResponse';
 import Image from 'next/image';
 import MarkdownRenderer from './MarkdownRenderer';
 import { useUser, useClerk } from '@clerk/nextjs';
-import { ArrowUpIcon } from '@heroicons/react/24/solid'
+import { ArrowUpIcon } from '@heroicons/react/24/solid';
 import { ChatProps } from '../../lib/types';
 import { MAX_MESSAGES_PER_DAY, userAuthor } from '../../lib/chat-declarations';
 
-
-
 const Chat: React.FC<ChatProps> = ({
-                                     pdfText,
-                                     input,
-                                     setInput,
-                                     chatMessages,
-                                     setChatMessages,
-                                     aiMessages,
-                                     setAiMessages,
-                                     aiAuthor}) => {
+                                       pdfText,
+                                       input,
+                                       setInput,
+                                       chatMessages,
+                                       setChatMessages,
+                                       aiMessages,
+                                       setAiMessages,
+                                       aiAuthor
+                                   }) => {
+    const chatContainer = useRef<HTMLDivElement>(null);
+    const { user } = useUser();
+    const { openSignUp } = useClerk();
 
-  console.log('pdfText:', pdfText);
+    const scrollToBottom = () => {
+        if (chatContainer.current) {
+            chatContainer.current.scrollTo({
+                top: chatContainer.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    };
 
-  const chatContainer = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        scrollToBottom();
+    }, [chatMessages]);
 
-  const { user } = useUser();
-  const { openSignUp } = useClerk();
+    const handleOnSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-  const scroll = () => {
-    const { offsetHeight, scrollHeight, scrollTop } = chatContainer.current as HTMLDivElement
-    if (scrollHeight >= scrollTop + offsetHeight) {
-      chatContainer.current?.scrollTo(0, scrollHeight + 200)
-    }
-  }
+        if (!user) {
+            openSignUp();
+            return;
+        }
 
-  //auto-scroll based on chat messages?
-  useEffect(() => {
-    scroll();
-  }, [chatMessages]);
+        const message = e.currentTarget['input-field'].value.trim();
+        if (!message) return;
 
-  const handleOnSendMessage = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+        setInput('');
 
-    //prevent chatting with AI if not logged in
-    if (!user){
-      openSignUp();
-      return;
-    }
+        const currentDate = new Date().toISOString().slice(0, 10);
+        const storedDate = localStorage.getItem('lastMessageDate');
+        const messageCount = parseInt(localStorage.getItem('messageCount') || '0');
 
-    const message = e.currentTarget['input-field'].value;
-    setInput('');
+        if (storedDate !== currentDate) {
+            localStorage.setItem('lastMessageDate', currentDate);
+            localStorage.setItem('messageCount', '0');
+        } else if (messageCount >= MAX_MESSAGES_PER_DAY) {
+            alert('Sorry, you have reached the maximum number of messages for today.');
+            return;
+        }
 
-    const currentDate = new Date().toISOString().slice(0, 10);
-    const storedDate = localStorage.getItem('lastMessageDate');
-    const messageCount = parseInt(localStorage.getItem('messageCount') || '0');
+        // Add user message
+        const userMessage = {
+            author: userAuthor,
+            text: message,
+            type: 'text',
+            timestamp: +new Date()
+        };
 
-    if (storedDate !== currentDate) {
-      localStorage.setItem('lastMessageDate', currentDate);
-      localStorage.setItem('messageCount', '0');
-    } else if (messageCount >= MAX_MESSAGES_PER_DAY) {
-      alert('Sorry, you have reached the maximum number of messages for today.');
-      return;
-    }
+        // Add temporary AI loading message
+        const aiLoadingMessage = {
+            author: aiAuthor,
+            text: 'Thinking...',
+            type: 'text',
+            timestamp: +new Date()
+        };
 
-    setChatMessages(messages => [...messages, {
-      author: userAuthor,
-      text: message,
-      type: 'text',
-      timestamp: +new Date()
-    }, {
-      author: aiAuthor,
-      text: '...',
-      type: 'text',
-      timestamp: +new Date()
-    }]);
+        setChatMessages(messages => [...messages, userMessage, aiLoadingMessage]);
 
-    const messageToSend = [...aiMessages, {
-      role: 'user',
-      content: `ROLE: You are an expert at analyzing text and answering questions on it.
+        const messageToSend = [...aiMessages, {
+            role: 'user',
+            content: `ROLE: You are an expert at analyzing text and answering questions on it.
 -------
 TASK:
 1. The user will provide a text from a PDF. Take the personality of the character that
-would be the most fiting to be an expert on the material of the text.
+would be the most fitting to be an expert on the material of the text.
 (e.g. if you get a text about chemistry, your personality should be that of a chemistry teacher.)
 2. Answer to the user's questions based on it. Your replies are short (less than 150 characters) and to the point, unless
 specified otherwise.
 -------
 PDF TEXT: ${pdfText}
 -------
-USER MESSAGE: ${message}` 
-    }];
+USER MESSAGE: ${message}`
+        }];
 
-    const response = await fetchOpenAIResponse({
-      messages: messageToSend, 
-      setMessage: (msg) => setChatMessages(messages => 
-        [...messages.slice(0, messages.length-1), {
-          author: aiAuthor,
-          text: msg,
-          type: 'text',
-          timestamp: +new Date()
-        }]
-      ),
-      setError: (error) => {
-        if (error.status === 401) {
-          openSignUp();
+        try {
+            const response = await fetchOpenAIResponse({
+                messages: messageToSend,
+                setMessage: (msg) => setChatMessages(messages =>
+                    [...messages.slice(0, -1), {
+                        author: aiAuthor,
+                        text: msg,
+                        type: 'text',
+                        timestamp: +new Date()
+                    }]
+                ),
+                setError: (error) => {
+                    if (error.status === 401) {
+                        openSignUp();
+                    }
+                }
+            });
+
+            setAiMessages(messages => [...messages,
+                { role: 'user', content: message },
+                { role: 'assistant', content: response }
+            ]);
+            localStorage.setItem('messageCount', (messageCount + 1).toString());
+        } catch (error) {
+            setChatMessages(messages => [...messages.slice(0, -1)]);
+            alert('Failed to send message. Please try again.');
         }
-      }
-    });
-    setAiMessages(messages => [...messages, {role: 'user', content: message }, {role: 'assistant', content: response }]);
+    };
 
-    //adding to the message count is done here, not in the useEffect hook,
-    //make this better
-    localStorage.setItem('messageCount', (messageCount + 1).toString());
-  }
-
-  const renderResponse = () => {
     return (
-      <div ref={chatContainer} className="response">
-        {chatMessages.map((m, index) => (
-          <div key={index} className={`chat-line ${m.author.username === 'User' ? 'user-chat' : 'ai-chat'}`}>
-            <Image className="avatar" alt="avatar" src={m.author.avatarUrl} width={32} height={32} />
-            <div style={{width: 592, marginLeft: '16px' }}>
-              <div className="message">
-                <MarkdownRenderer>{m.text}</MarkdownRenderer>
-              </div>
-              {index < chatMessages.length-1 && <div className="horizontal-line"/>}
+        <div className="flex flex-col h-full">
+            {/* Chat messages container */}
+            <div
+                ref={chatContainer}
+                className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800"
+            >
+                {chatMessages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                        <p className="text-lg">Ask questions about your PDF</p>
+                        <p className="text-sm mt-2">Upload a PDF to start chatting</p>
+                    </div>
+                ) : (
+                    chatMessages.map((m, index) => (
+                        <div
+                            key={index}
+                            className={`flex ${m.author.username === 'User' ? 'justify-end' : 'justify-start'}`}
+                        >
+                            <div className={`flex max-w-3xl ${m.author.username === 'User' ? 'flex-row-reverse' : ''}`}>
+                                <div className="flex-shrink-0">
+                                    <Image
+                                        className="rounded-full"
+                                        alt="avatar"
+                                        src={m.author.avatarUrl}
+                                        width={32}
+                                        height={32}
+                                    />
+                                </div>
+                                {/*AI text box*/}
+                                <div
+                                    className={`mx-2 p-3 rounded-lg text-left ${m.author.username === 'User'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-700 text-white'}`}
+                                >
+                                    <MarkdownRenderer>{m.text}</MarkdownRenderer>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
 
-  return (
-    <div className="chat">
-      {renderResponse()}
-      <form onSubmit={handleOnSendMessage} className="chat-form">
-        <div className="relative group w-full">
-          <input
-              name="input-field"
-              type="text"
-              placeholder="Ask me anything . . . "
-              onChange={(e) => setInput(e.target.value)}
-              value={input}
-              className="w-full disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
-              disabled={!pdfText}
-          />
-          {!pdfText && (
-              <div className="absolute left-0 top-full mt-1 w-max px-2 py-1 text-sm text-white bg-gray-800 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                Upload a PDF to start chatting
-              </div>
-          )}
+            {/* Input form */}
+            <form
+                onSubmit={handleOnSendMessage}
+                className="p-4"
+            >
+                <div className="flex items-center">
+                    <input
+                        name="input-field"
+                        type="text"
+                        placeholder="Ask me anything..."
+                        onChange={(e) => setInput(e.target.value)}
+                        value={input}
+                        className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+                        disabled={!pdfText}
+                    />
+                    <button
+                        type="submit"
+                        disabled={!input || !pdfText}
+                        className="px-4 py-2.5 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                        <ArrowUpIcon className="h-5 w-5" />
+                    </button>
+                </div>
+                {!pdfText && (
+                    <p className="mt-2 text-sm text-gray-400">
+                        Upload a PDF to enable chat
+                    </p>
+                )}
+            </form>
         </div>
-        <button type="submit" className="send-button flex
-        items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed
-        disabled:pointer-events-none" disabled={!input}>
-          <ArrowUpIcon className="size-4" />
-        </button>
-      </form>
-    </div>
-  );
-}
+    );
+};
 
 export default Chat;

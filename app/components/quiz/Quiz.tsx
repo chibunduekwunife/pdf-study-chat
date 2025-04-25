@@ -61,6 +61,7 @@ export default function Quiz({ pdfText }: QuizProps) {
                 <QuizQuestions
                     quizData={quizData}
                     onComplete={handleCompleteQuiz}
+                    onEndQuiz={() => setStage('settings')}
                 />
             )}
 
