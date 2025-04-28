@@ -23,4 +23,4 @@ export const userAuthor = {
     avatarUrl: '/user.png',
 };
 
-export const MAX_MESSAGES_PER_DAY = 200;
+export const MAX_MESSAGES_PER_DAY = 100;
